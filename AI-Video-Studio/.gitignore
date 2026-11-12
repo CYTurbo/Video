@@ -1,0 +1,20 @@
+.venv/
+.venv-blender/
+remotion/node_modules/
+remotion/out/
+__pycache__/
+*.pyc
+# user media & renders are local-only (can be large / private)
+media/*/*
+!media/*/.gitkeep
+renders/intermediate/*
+!renders/intermediate/.gitkeep
+exports/**/*
+!exports/**/.gitkeep
+projects/**/*
+!projects/**/.gitkeep
+logs/**/*
+!logs/**/.gitkeep
+tests/assets/
+tests/output/
+models/

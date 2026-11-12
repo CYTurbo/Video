@@ -1,0 +1,17 @@
+{
+  "description": "Fast beat cuts, glitch/RGB split on cuts, flashes and punch-zooms on beats",
+  "grade": "neon",
+  "transition": {
+    "type": "glitch"
+  },
+  "cut_mode": "beats",
+  "beat_every": 0.5,
+  "effects": {
+    "glitch_on_cuts": true,
+    "rgb_split": 2,
+    "flash_on_beats": true,
+    "punch_on_beats": true,
+    "grain": 6
+  },
+  "title_style": "glitch"
+}

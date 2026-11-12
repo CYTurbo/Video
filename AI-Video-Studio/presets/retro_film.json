@@ -1,0 +1,15 @@
+{
+  "description": "Vintage curves, faded blacks, strong grain, warm light leaks",
+  "grade": "retro",
+  "transition": {
+    "type": "fade",
+    "duration": 0.5
+  },
+  "effects": {
+    "grain": 18,
+    "vignette": true,
+    "light_leaks": true,
+    "light_leak_opacity": 0.35
+  },
+  "title_style": "typewriter"
+}

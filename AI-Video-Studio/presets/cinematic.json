@@ -1,0 +1,15 @@
+{
+  "description": "Teal/orange film look, smooth slides, gentle grain, vignette, motion blur",
+  "grade": "cinematic",
+  "transition": {
+    "type": "smoothleft",
+    "duration": 0.5
+  },
+  "effects": {
+    "grain": 8,
+    "vignette": true,
+    "motion_blur": 3,
+    "light_leaks": "cuts"
+  },
+  "title_style": "kinetic"
+}

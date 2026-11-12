@@ -1,0 +1,27 @@
+{
+  "_comment": "OPTIONAL. Review, then copy to AI-Video-Studio/.claude/settings.json yourself. Pre-approves only the studio CLI and ffprobe, blocks edits to your original media, and offers the official Remotion Claude Code plugin (MIT, skills only).",
+  "permissions": {
+    "allow": [
+      "Bash(./studio.sh:*)",
+      "Bash(.\\studio.cmd:*)",
+      "Bash(studio.cmd:*)",
+      "Bash(.venv/bin/python studio.py:*)",
+      "Bash(.venv\\Scripts\\python.exe studio.py:*)",
+      "Bash(.venv/bin/python tests/run_tests.py:*)",
+      "Bash(.venv\\Scripts\\python.exe tests\\run_tests.py:*)",
+      "Bash(ffprobe:*)"
+    ],
+    "deny": [
+      "Edit(./media/**)",
+      "Write(./media/**)"
+    ]
+  },
+  "extraKnownMarketplaces": {
+    "remotion": {
+      "source": { "source": "github", "repo": "remotion-dev/claude-code-plugin" }
+    }
+  },
+  "enabledPlugins": {
+    "remotion@remotion": true
+  }
+}

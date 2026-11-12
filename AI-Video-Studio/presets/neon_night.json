@@ -1,0 +1,14 @@
+{
+  "description": "Neon magenta/cyan grade, RGB split, whip-blur transitions",
+  "grade": "neon",
+  "transition": {
+    "type": "whip",
+    "duration": 0.25
+  },
+  "effects": {
+    "rgb_split": 3,
+    "motion_blur": 3,
+    "vignette": true
+  },
+  "title_style": "glitch"
+}

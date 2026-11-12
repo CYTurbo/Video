@@ -1,0 +1,8 @@
+# All free / open-source (licences: BSD, MIT, Apache-2.0, ISC, HPND)
+numpy>=2.0
+opencv-python-headless>=4.10
+pillow>=10.0
+librosa>=0.10
+soundfile>=0.12
+scenedetect>=0.6.4
+faster-whisper>=1.0

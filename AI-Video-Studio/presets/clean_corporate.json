@@ -1,0 +1,12 @@
+{
+  "description": "Neutral grade, crisp dissolves, lower-third titles, no grain",
+  "grade": "neutral",
+  "transition": {
+    "type": "fade",
+    "duration": 0.4
+  },
+  "effects": {
+    "sharpen": 0.3
+  },
+  "title_style": "lowerthird"
+}

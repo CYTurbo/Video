@@ -1,0 +1,14 @@
+{
+  "description": "High-contrast black & white, dip-to-black transitions, grain, letterbox on 16:9",
+  "grade": "bw_contrast",
+  "transition": {
+    "type": "fadeblack",
+    "duration": 0.6
+  },
+  "effects": {
+    "grain": 14,
+    "vignette": true,
+    "letterbox": true
+  },
+  "title_style": "kinetic"
+}

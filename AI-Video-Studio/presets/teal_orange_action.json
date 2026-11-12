@@ -1,0 +1,15 @@
+{
+  "description": "Strong teal/orange, speed ramps, camera shake, zoom transitions",
+  "grade": "teal_orange",
+  "transition": {
+    "type": "zoomin",
+    "duration": 0.3
+  },
+  "effects": {
+    "shake": 8,
+    "motion_blur": 3,
+    "grain": 6,
+    "vignette": true
+  },
+  "title_style": "bigpop"
+}

@@ -1,0 +1,13 @@
+{
+  "description": "Desaturated cool shadows, slow dissolves, heavy vignette, grain",
+  "grade": "moody",
+  "transition": {
+    "type": "fade",
+    "duration": 0.8
+  },
+  "effects": {
+    "grain": 12,
+    "vignette": true
+  },
+  "title_style": "typewriter"
+}
