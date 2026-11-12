@@ -309,7 +309,45 @@ def test_G(a):
     record("G", "Audio cleanup & loudness", all(c[1] for c in checks), checks, files=[str(clean)], seconds=time.time() - t0)
 
 
-TESTS = {"A": test_A, "B": test_B, "C": test_C, "D": test_D, "E": test_E, "F": test_F, "G": test_G}
+def test_H(a):
+    """Music structure: tempo, downbeats, kick/snare hits, sections, build and drops vs a ground-truth track."""
+    t0 = time.time()
+    from studio import music
+    f = ASSETS / "music_structured_140.wav"
+    if not f.exists():
+        synth.synth_structured_track(f)
+    gt = json.loads(Path(str(f) + ".structure.json").read_text())
+    m = music.analyze(f, OUT / "music_H")
+
+    def rp(det, truth, tol):
+        det, truth = np.array(det), np.array(truth)
+        if not len(det) or not len(truth):
+            return 0.0, 0.0
+        return (float(np.mean([np.min(np.abs(det - x)) <= tol for x in truth])),
+                float(np.mean([np.min(np.abs(truth - x)) <= tol for x in det])))
+    db = rp(m["downbeats"], gt["downbeats"], 0.07)
+    kk = rp([k["t"] for k in m["kicks"]], gt["kicks"], 0.05)
+    drop_snares = [x for x in gt["snares"] if any(d <= x < d + 8 * gt["bar"] for d in gt["drops"])]
+    sn = rp([x["t"] for x in m["snares"]], drop_snares, 0.05)
+    _, sn_prec = rp([x["t"] for x in m["snares"]], gt["snares"], 0.05)
+    secs = {(s["label"], round(s["start"] / gt["bar"])) for s in m["sections"]}
+    want = {(s["label"], round(s["start"] / gt["bar"])) for s in gt["sections"]}
+    checks = [("tempo", abs(m["tempo_bpm"] - gt["bpm"]) < 1, f"{m['tempo_bpm']} BPM (truth {gt['bpm']})"),
+              ("downbeats (bar 1 found, ±70 ms)", min(db) >= 0.95, f"recall {db[0]:.2f}, precision {db[1]:.2f}"),
+              ("kick hits (±50 ms)", min(kk) >= 0.9, f"recall {kk[0]:.2f}, precision {kk[1]:.2f}"),
+              ("snare hits in drops (±50 ms), no false snares overall", sn[0] >= 0.9 and sn_prec >= 0.9,
+               f"drop recall {sn[0]:.2f}, overall precision {sn_prec:.2f} (1/16 rolls are a texture, not separable hits)"),
+              ("drops located (±1 beat)", len(m["drops"]) == 2 and all(min(abs(np.array(m["drops"]) - d)) < 60 / gt["bpm"] for d in gt["drops"]),
+               f"{m['drops']} vs {gt['drops']}"),
+              ("build-up located (±1 bar)", len(m["builds"]) == 1 and abs(m["builds"][0][0] - gt["build"][0]) < gt["bar"],
+               f"{m['builds']} vs {gt['build']}"),
+              ("all 5 true sections found with correct label & bar", want <= secs, f"detected {sorted(secs, key=lambda x: x[1])}")]
+    record("H", "Music structure analysis", all(c[1] for c in checks), checks,
+           notes="Synthetic structured 140 BPM track (test-only). Real dense mixes still need validation with user-supplied music.",
+           files=[str(OUT / "music_H" / "music_structure.png")], seconds=time.time() - t0)
+
+
+TESTS = {"A": test_A, "B": test_B, "C": test_C, "D": test_D, "E": test_E, "F": test_F, "G": test_G, "H": test_H}
 
 
 def _merge_previous():

@@ -50,6 +50,7 @@ All verification was done in a Linux container without a GPU (see SETUP_REPORT.m
 ## Audio
 | Capability | Status | Notes |
 |---|---|---|
+| Music structure map: downbeats, 4-bar phrases, sections (intro/verse/build/drop/break/outro), builds, drops, kick/snare/hat hits, energy curve, accents, tempo curve | Verified on a ground-truth synthetic track (H: all sections, drops ±25 ms, kicks & drop snares 100 %) — **not yet validated on real dense mixes** | `studio music song.mp3` → JSON + timeline PNG |
 | Beat / tempo detection | Verified (C: 120.0 BPM, 98% recall & precision vs ground truth) | librosa, kick-band-stabilised |
 | Beat-synchronised cuts | Verified (C: visual cuts within ±1 frame of beats in the final file) | |
 | Flash / punch effects on beats; beat-pulsed typography | Rendered (B, C) | |

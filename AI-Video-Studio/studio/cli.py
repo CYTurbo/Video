@@ -10,6 +10,7 @@
   python studio.py typography "LINE ONE|LINE TWO" [--duration 20] [--music m] [--format 16:9]
   python studio.py title3d "TEXT" [--format 16:9] [--duration 4]
   python studio.py beats music.wav
+  python studio.py music song.mp3                 structure map: downbeats, sections, builds, drops, kick/snare
   python studio.py captions video.mp4 [--style bold_pop] [--srt file.srt]
   python studio.py audio-clean in.wav             voice cleanup + loudness normalisation (new file)
   python studio.py reformat video.mp4 --format 9:16 [--fit blur|crop]
@@ -159,6 +160,19 @@ def cmd_beats(a) -> int:
     return 0
 
 
+def cmd_music(a) -> int:
+    from . import music
+    out = config.PROJECTS / f"music_{Path(a.audio).stem}"
+    m = music.analyze(a.audio, out)
+    print(f"tempo {m['tempo_bpm']} BPM, {len(m['downbeats'])} bars, tempo changes: {m['tempo_changes'] or 'none'}")
+    for s in m["sections"]:
+        print(f"  {s['label']:6s} {s['start']:7.2f}s - {s['end']:7.2f}s  ({s['bars']} bars, energy {s['energy']})")
+    print(f"drops: {m['drops']}  builds: {m['builds']}")
+    print(f"kicks {len(m['kicks'])}, snares {len(m['snares'])}, hats {len(m['hats'])}, accents {len(m['accents'])}")
+    print(f"saved {out / 'music_structure.json'} and timeline {out / 'music_structure.png'}")
+    return 0
+
+
 def cmd_captions(a) -> int:
     from . import qc, subtitles
     from .media import probe, run
@@ -247,6 +261,7 @@ def main(argv=None) -> int:
     s = sp.add_parser("title3d"); s.add_argument("text"); s.add_argument("--format", choices=list(FMT))
     s.add_argument("--duration", type=float, default=4); s.add_argument("--samples", type=int, default=16); s.set_defaults(f=cmd_title3d)
     s = sp.add_parser("beats"); s.add_argument("audio"); s.set_defaults(f=cmd_beats)
+    s = sp.add_parser("music"); s.add_argument("audio"); s.set_defaults(f=cmd_music)
     s = sp.add_parser("captions"); s.add_argument("video"); s.add_argument("--style", default="bold_pop")
     s.add_argument("--srt"); s.add_argument("--model", default="small"); s.add_argument("--language"); s.set_defaults(f=cmd_captions)
     s = sp.add_parser("audio-clean"); s.add_argument("input"); s.add_argument("--strength", default="medium")

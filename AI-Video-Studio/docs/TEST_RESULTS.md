@@ -1,8 +1,8 @@
 # TEST_RESULTS
 
-Run: 2026-11-12 10:19 on Linux 6.18.44-fc-v378 (x86_64, 4 CPU threads, no GPU in this environment)
+Run: 2026-11-12 10:44 on Linux 6.18.44-fc-v378 (x86_64, 4 CPU threads, no GPU in this environment)
 
-Full suite (A–G) passed in 13 m 47 s; A and B were then re-run (212 s) after fixing a text-overflow defect spotted visually in B (see PROGRESS_LOG.md). The Text-fit check was added to B at that point.
+Total time: 6s
 
 | Test | Result | Time | Last run |
 |---|---|---|---|
@@ -13,8 +13,9 @@ Full suite (A–G) passed in 13 m 47 s; A and B were then re-run (212 s) after f
 | E: Styled captions (burn-in) | PASS | 35.0s | 2026-11-12 (full run) |
 | F: Blender scripted 3D animation | PASS | 172.1s | 2026-11-12 (full run) |
 | G: Audio cleanup & loudness | PASS | 1.1s | 2026-11-12 (full run) |
+| H: Music structure analysis | PASS | 6.0s | 2026-11-12 10:44 |
 
-**Source media untouched:** YES (9 files hashed with SHA-256 before and after)
+**Source media untouched:** YES (11 files hashed with SHA-256 before and after)
 
 ## Test A: Cinematic reel 1080x1920 15s — PASS
 
@@ -152,13 +153,18 @@ Files: `tests/output/testF_title3d.mp4`, `tests/output/testF_title3d.contact.png
 
 Files: `exports/noisy_voice_clean.wav`
 
-## Preview images (contact sheets of the actual test outputs)
-- Test A: ![A](images/testA_cinematic_reel.jpg)
-- Test B: ![B](images/testB_motion_typography.jpg)
-- Test C: ![C](images/testC_beat_sync.jpg)
-- Test D (top: reference, bottom: recreation): ![D](images/testD_reference_vs_recreation.jpg)
-- Test E: ![E](images/testE_captions.jpg)
-- Test F: ![F](images/testF_title3d.jpg)
+## Test H: Music structure analysis — PASS
 
-Note: test footage is procedurally generated (license-free) at low internal resolution and upscaled, so it looks
-soft/blocky by design; this says nothing about output quality with real camera footage.
+| Check | OK | Measured |
+|---|---|---|
+| tempo | ✓ | 140.04 BPM (truth 140.0) |
+| downbeats (bar 1 found, ±70 ms) | ✓ | recall 1.00, precision 1.00 |
+| kick hits (±50 ms) | ✓ | recall 1.00, precision 1.00 |
+| snare hits in drops (±50 ms), no false snares overall | ✓ | drop recall 1.00, overall precision 1.00 (1/16 rolls are a texture, not separable hits) |
+| drops located (±1 beat) | ✓ | [20.5961, 41.169] vs [20.5714, 41.1429] |
+| build-up located (±1 bar) | ✓ | [[13.7462, 20.5961]] vs [13.7143, 20.5714] |
+| all 5 true sections found with correct label & bar | ✓ | detected [('intro', 0), ('build', 8), ('drop', 12), ('break', 20), ('drop', 24), ('outro', 31)] |
+
+Synthetic structured 140 BPM track (test-only). Real dense mixes still need validation with user-supplied music.
+
+Files: `tests/output/music_H/music_structure.png`
