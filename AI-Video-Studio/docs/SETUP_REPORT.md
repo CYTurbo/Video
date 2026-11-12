@@ -96,3 +96,23 @@ Disk usage (build env): `.venv` 1.2 GB, `.venv-blender` 1.1 GB (skip if you inst
 - No antivirus/OS protections touched; no execution-policy changes beyond a single `-ExecutionPolicy Bypass` invocation.
 - No API keys, accounts, trials or payment details anywhere.
 - Original media is read-only to the pipeline (`config.assert_writable_output`), hashed before/after every test run.
+
+## Update — Windows readiness review (second session)
+Verified from Linux, **not yet on real Windows** (no Windows machine was reachable):
+- **Python:** all 48 pinned packages (`requirements.lock.txt`) have Windows x64 / Python 3.13 wheels — downloaded with
+  `pip download --platform win_amd64 --python-version 3.13 --only-binary=:all:`; the full dependency tree resolves
+  for that target. `setup.ps1` now installs with the lock file as constraints (exact tested versions).
+- **Fixed conflict:** `opencv-python-headless` removed — `scenedetect` requires `opencv-python`, and both ship the same
+  `cv2` module (a known cause of broken installs).
+- **Remotion:** `npm ci --os=win32 --cpu=x64` against the lock file installs 247 packages incl. the Windows renderer
+  `@remotion/compositor-win32-x64-msvc@4.0.543` (integrity-pinned). Unused `@remotion/transitions` and
+  `@remotion/media-utils` removed (their package metadata said `UNLICENSED`).
+- **setup.ps1 bugs fixed:** crash when Python 3.13 is missing (Windows PowerShell 5.1 turns native stderr into a
+  terminating error under `Stop`); Microsoft Store `python` alias mistaken for Python; Node version not checked
+  (now ≥ 18); pip/npm failures ignored; nvidia-smi arguments passed as one string; new x64 check — **Windows on ARM
+  is not supported** (no Remotion/ctranslate2 ARM builds). Helpers tested with mock commands in PowerShell 7.5.5.
+- **Licences audited:** every Python package is OSI open-source (MIT/BSD/Apache/ISC/MPL/PSF; soxr LGPL). npm: MIT/ISC/
+  BSD/Apache/MPL plus Remotion packages under the Remotion License (free for individuals). Optional NVIDIA CUDA wheels
+  are free of charge but proprietary (NVIDIA licence). Nothing paid, no trials, no API keys.
+- **Remotion Claude Code plugin enabled** via `claude plugin install remotion@remotion --scope project`
+  (`.claude/settings.json`): 13 skills, 0 hooks, 0 agents, 0 MCP servers, ~345 tokens/session.

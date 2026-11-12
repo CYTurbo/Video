@@ -8,10 +8,11 @@ $ErrorActionPreference = "SilentlyContinue"
 $root = Split-Path -Parent $PSScriptRoot
 New-Item -ItemType Directory -Force -Path "$root\logs" | Out-Null
 
-function Get-ToolVersion($cmd, $verArgs = "--version") {
+function Get-ToolVersion($cmd, [string[]]$verArgs = @("--version")) {
     $c = Get-Command $cmd -ErrorAction SilentlyContinue
     if (-not $c) { return $null }
-    try { $v = (& $c.Source $verArgs 2>&1 | Select-Object -First 1) -join "" } catch { $v = "found" }
+    if ($c.Source -match "WindowsApps\\python") { return @{ path = $c.Source; version = "Microsoft Store alias only (not a real Python)" } }
+    try { $v = (& $c.Source @verArgs 2>&1 | Select-Object -First 1) -join "" } catch { $v = "found" }
     return @{ path = $c.Source; version = "$v".Trim() }
 }
 
@@ -21,6 +22,7 @@ $gpus = Get-CimInstance Win32_VideoController
 $disk = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3"
 
 $report = [ordered]@{
+    arch    = $env:PROCESSOR_ARCHITECTURE
     windows = @{ caption = $os.Caption; version = $os.Version; build = $os.BuildNumber; arch = $os.OSArchitecture }
     cpu     = @{ name = $cpu.Name.Trim(); cores = $cpu.NumberOfCores; threads = $cpu.NumberOfLogicalProcessors }
     ram_gb  = [math]::Round($os.TotalVisibleMemorySize / 1MB, 1)
@@ -28,17 +30,17 @@ $report = [ordered]@{
     disks   = @($disk | ForEach-Object { @{ drive = $_.DeviceID; free_gb = [math]::Round($_.FreeSpace / 1GB, 1); size_gb = [math]::Round($_.Size / 1GB, 1) } })
     tools   = [ordered]@{
         python  = (Get-ToolVersion "python")
-        py_launcher = (Get-ToolVersion "py" "--list")
+        py_launcher = (Get-ToolVersion "py" @("--list"))
         node    = (Get-ToolVersion "node")
         npm     = (Get-ToolVersion "npm.cmd")
         git     = (Get-ToolVersion "git")
-        ffmpeg  = (Get-ToolVersion "ffmpeg" "-version")
-        ffprobe = (Get-ToolVersion "ffprobe" "-version")
+        ffmpeg  = (Get-ToolVersion "ffmpeg" @("-version"))
+        ffprobe = (Get-ToolVersion "ffprobe" @("-version"))
         blender = (Get-ToolVersion "blender")
         vscode  = (Get-ToolVersion "code")
         winget  = (Get-ToolVersion "winget")
         claude  = (Get-ToolVersion "claude")
-        nvidia_smi = (Get-ToolVersion "nvidia-smi" "--query-gpu=name,driver_version,memory.total --format=csv,noheader")
+        nvidia_smi = (Get-ToolVersion "nvidia-smi" @("--query-gpu=name,driver_version,memory.total", "--format=csv,noheader"))
     }
     apps = @()
 }
@@ -60,6 +62,7 @@ if ($gpuNames -match "NVIDIA") { $rec += "NVIDIA GPU: use Blender Cycles OptiX/C
 elseif ($gpuNames -match "AMD|Radeon") { $rec += "AMD GPU: Blender Cycles HIP (RDNA2+), FFmpeg h264_amf; Whisper runs on CPU (int8)." }
 elseif ($gpuNames -match "Intel") { $rec += "Intel GPU: Blender Cycles oneAPI (Arc only), FFmpeg h264_qsv; Whisper on CPU." }
 else { $rec += "No discrete GPU detected: everything works on CPU; use EEVEE for fast Blender previews, Cycles for finals." }
+if ($env:PROCESSOR_ARCHITECTURE -ne "AMD64") { $rec += "Non-x64 CPU ($($env:PROCESSOR_ARCHITECTURE)): Remotion and Whisper (ctranslate2) have no Windows-on-ARM builds." }
 if ($report.ram_gb -lt 8) { $rec += "Under 8 GB RAM: keep Remotion concurrency at 1-2 and Whisper model at 'base' or 'small'." }
 $free = ($report.disks | Where-Object { $_.drive -eq "C:" }).free_gb
 if ($free -lt 15) { $rec += "Less than 15 GB free on C: - full install needs ~6 GB (Blender ~1 GB, FFmpeg ~0.2 GB, Node modules ~0.6 GB, Python libs ~1.5 GB, Whisper small ~0.5 GB)." }

@@ -1,6 +1,6 @@
 # All free / open-source (licences: BSD, MIT, Apache-2.0, ISC, HPND)
 numpy>=2.0
-opencv-python-headless>=4.10
+opencv-python>=4.10       # required by scenedetect (do not also install the -headless build: same cv2 module)
 pillow>=10.0
 librosa>=0.10
 soundfile>=0.12
