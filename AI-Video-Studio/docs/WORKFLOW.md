@@ -134,3 +134,12 @@ studio doctor
 3. `studio make "15 second cinematic Instagram reel synced to the music with the title \"MY FIRST EDIT\"" --media media/raw/* --music media/audio/<song>`
 4. Open `exports/<name>.mp4` and `exports/<name>.contact.png`.
 5. Tweak `projects/<name>/plan.json` (in-points, title text, grade) → `studio render projects/<name>/plan.json`.
+
+## 7. Ranking / countdown videos ("Top 5 ...")
+1. Put each entry's BEFORE and AFTER photo in `media/images/` (only photos you have permission to use).
+2. Copy `templates/ranking_spec.example.json` to `projects/my_ranking.json`, fill in ranks, names, captions, file
+   names and your music track (one you have rights to). You decide the order.
+3. `studio ranking projects/my_ranking.json`
+   - entries play #5 → #1; each: rank slam → BEFORE (slow push-in) → flash + wipe to AFTER on a strong beat → caption
+   - the song is started at the right downbeat so its **drop hits the #1 reveal** (when the track has a drop)
+   - output `exports/<name>.mp4` (1080×1920 by default), QC + contact sheet

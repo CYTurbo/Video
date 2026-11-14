@@ -10,6 +10,7 @@
   python studio.py typography "LINE ONE|LINE TWO" [--duration 20] [--music m] [--format 16:9]
   python studio.py title3d "TEXT" [--format 16:9] [--duration 4]
   python studio.py beats music.wav
+  python studio.py ranking spec.json [--music m]   countdown video with before/after reveals (see studio/ranking.py)
   python studio.py music song.mp3                 structure map: downbeats, sections, builds, drops, kick/snare
   python studio.py captions video.mp4 [--style bold_pop] [--srt file.srt]
   python studio.py audio-clean in.wav             voice cleanup + loudness normalisation (new file)
@@ -173,6 +174,21 @@ def cmd_music(a) -> int:
     return 0
 
 
+def cmd_ranking(a) -> int:
+    from . import ranking
+    if a.demo:
+        items = ranking.placeholder_images(config.INTERMEDIATE / "ranking_placeholders", a.demo)
+        spec = {"name": "ranking_demo", "title": "TOP 5 GLOW-UPS", "subtitle": "placeholder demo", "items": items,
+                "music": a.music, "format": a.format or "9:16"}
+    else:
+        spec = json.loads(Path(a.spec).read_text())
+        if a.music:
+            spec["music"] = a.music
+        if a.format:
+            spec["format"] = a.format
+    return _report(ranking.make(spec))
+
+
 def cmd_captions(a) -> int:
     from . import qc, subtitles
     from .media import probe, run
@@ -261,6 +277,8 @@ def main(argv=None) -> int:
     s = sp.add_parser("title3d"); s.add_argument("text"); s.add_argument("--format", choices=list(FMT))
     s.add_argument("--duration", type=float, default=4); s.add_argument("--samples", type=int, default=16); s.set_defaults(f=cmd_title3d)
     s = sp.add_parser("beats"); s.add_argument("audio"); s.set_defaults(f=cmd_beats)
+    s = sp.add_parser("ranking"); s.add_argument("spec", nargs="?"); s.add_argument("--music"); s.add_argument("--format", choices=list(FMT))
+    s.add_argument("--demo", type=int, help="render N placeholder entries instead of a spec"); s.set_defaults(f=cmd_ranking)
     s = sp.add_parser("music"); s.add_argument("audio"); s.set_defaults(f=cmd_music)
     s = sp.add_parser("captions"); s.add_argument("video"); s.add_argument("--style", default="bold_pop")
     s.add_argument("--srt"); s.add_argument("--model", default="small"); s.add_argument("--language"); s.set_defaults(f=cmd_captions)

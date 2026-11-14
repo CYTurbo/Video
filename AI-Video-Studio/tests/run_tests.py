@@ -347,7 +347,45 @@ def test_H(a):
            files=[str(OUT / "music_H" / "music_structure.png")], seconds=time.time() - t0)
 
 
-TESTS = {"A": test_A, "B": test_B, "C": test_C, "D": test_D, "E": test_E, "F": test_F, "G": test_G, "H": test_H}
+def test_I(a):
+    """Ranking countdown: entries in order, reveals inside entries, #1 reveal on the drop, BEFORE photos not washed out."""
+    t0 = time.time()
+    from studio import ranking
+    import subprocess
+    import cv2
+    f = ASSETS / "music_structured_140.wav"
+    if not f.exists():
+        synth.synth_structured_track(f)
+    items = ranking.placeholder_images(OUT / "ranking_placeholders", 5)
+    res = ranking.make({"name": "testI_ranking", "title": "TOP 5 TEST", "items": items, "music": str(f)})
+    rep, sch = res["qc"], res["schedule"]
+    checks = _spec_checks(rep, 1080, 1920, 30, sch["duration"])
+    ranks = [it["rank"] for it in res["items"]]
+    checks.append(("countdown order 5 -> 1", ranks == [5, 4, 3, 2, 1], ranks))
+    inside = all(it["start"] + 0.8 <= it["reveal"] <= it["end"] - 0.8 for it in res["items"])
+    checks.append(("every reveal inside its entry", inside, [(it["start"], it["reveal"], it["end"]) for it in res["items"]]))
+    y, sr = A.load_mono(res["output"])
+    import librosa
+    r = librosa.feature.rms(y=y, hop_length=256)[0]
+    tt = librosa.times_like(r, sr=sr, hop_length=256)
+    rv1 = res["items"][-1]["reveal"]
+    lv = lambda a_, b_: 20 * np.log10(r[(tt >= a_) & (tt < b_)].mean() + 1e-9)  # noqa: E731
+    step = lv(rv1 + 0.05, rv1 + 1.5) - lv(rv1 - 1.5, rv1 - 0.05)
+    checks.append(("#1 reveal lands on the music drop (loudness step in OUTPUT)", step > 3, f"+{step:.1f} dB at {rv1}s"))
+    lum = []
+    for it in res["items"]:
+        n = int((it["start"] + it["reveal"]) / 2 * 30)
+        raw = subprocess.run([config.ffmpeg(), "-v", "error", "-i", res["output"], "-vf", f"select='eq(n\\,{n})'", "-frames:v", "1",
+                              "-f", "image2pipe", "-vcodec", "png", "-"], capture_output=True).stdout
+        g = cv2.imdecode(np.frombuffer(raw, np.uint8), cv2.IMREAD_GRAYSCALE)
+        h, w = g.shape
+        lum.append(round(float(g[int(h * .55):int(h * .7), int(w * .2):int(w * .8)].mean()), 1))
+    checks.append(("BEFORE photos shown at true brightness (no stuck flash)", max(lum) < 140, f"card luma {lum} (placeholder grey ~70-100)"))
+    record("I", "Ranking countdown template", all(c[1] for c in checks), checks, notes="Placeholder images (no people) + test track.",
+           files=[res["output"], rep.get("contact_sheet")], seconds=time.time() - t0)
+
+
+TESTS = {"A": test_A, "B": test_B, "C": test_C, "D": test_D, "E": test_E, "F": test_F, "G": test_G, "H": test_H, "I": test_I}
 
 
 def _merge_previous():

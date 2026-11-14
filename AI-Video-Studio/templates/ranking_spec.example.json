@@ -1,0 +1,16 @@
+{
+  "name": "top5_glowups",
+  "title": "TOP 5 GLOW-UPS",
+  "subtitle": "#1 is unbelievable",
+  "format": "9:16",
+  "music": "media/audio/YOUR_TRACK.mp3",
+  "accent": "#ff3d7f",
+  "seconds_per_item": 4.5,
+  "items": [
+    {"rank": 5, "name": "Name 5", "caption": "2018 -> 2025", "before": "media/images/5_before.jpg", "after": "media/images/5_after.jpg"},
+    {"rank": 4, "name": "Name 4", "caption": "2018 -> 2025", "before": "media/images/4_before.jpg", "after": "media/images/4_after.jpg"},
+    {"rank": 3, "name": "Name 3", "caption": "2018 -> 2025", "before": "media/images/3_before.jpg", "after": "media/images/3_after.jpg"},
+    {"rank": 2, "name": "Name 2", "caption": "2018 -> 2025", "before": "media/images/2_before.jpg", "after": "media/images/2_after.jpg"},
+    {"rank": 1, "name": "Name 1", "caption": "2018 -> 2025", "before": "media/images/1_before.jpg", "after": "media/images/1_after.jpg"}
+  ]
+}

@@ -1,8 +1,8 @@
 # TEST_RESULTS
 
-Run: 2026-11-12 10:44 on Linux 6.18.44-fc-v378 (x86_64, 4 CPU threads, no GPU in this environment)
+Run: 2026-11-14 13:59 on Linux 6.18.44-fc-v470 (x86_64, 4 CPU threads, no GPU in this environment)
 
-Total time: 6s
+Total time: 89s
 
 | Test | Result | Time | Last run |
 |---|---|---|---|
@@ -14,6 +14,7 @@ Total time: 6s
 | F: Blender scripted 3D animation | PASS | 172.1s | 2026-11-12 (full run) |
 | G: Audio cleanup & loudness | PASS | 1.1s | 2026-11-12 (full run) |
 | H: Music structure analysis | PASS | 6.0s | 2026-11-12 10:44 |
+| I: Ranking countdown template | PASS | 88.6s | 2026-11-14 13:59 |
 
 **Source media untouched:** YES (11 files hashed with SHA-256 before and after)
 
@@ -168,3 +169,24 @@ Files: `exports/noisy_voice_clean.wav`
 Synthetic structured 140 BPM track (test-only). Real dense mixes still need validation with user-supplied music.
 
 Files: `tests/output/music_H/music_structure.png`
+
+## Test I: Ranking countdown template — PASS
+
+| Check | OK | Measured |
+|---|---|---|
+| file exists & decodes | ✓ | /home/user/Video/AI-Video-Studio/exports/testI_ranking.mp4 |
+| resolution | ✓ | 1080x1920 |
+| frame rate | ✓ | 30.0 |
+| duration | ✓ | 29.500s (target 29.5) |
+| video codec h264/yuv420p | ✓ | h264/yuv420p |
+| no black/blank frames | ✓ | black=[], sampled luma std=[47.2, 84.2, 111.6, 44.3] |
+| audio aac, length matches video | ✓ | aac 29.50s |
+| loudness normalised ~-14 LUFS | ✓ | -14.8 LUFS |
+| countdown order 5 -> 1 | ✓ | [5, 4, 3, 2, 1] |
+| every reveal inside its entry | ✓ | [(1.7333, 3.4667, 6.8667), (6.8667, 8.6, 12.0333), (12.0333, 13.7333, 17.1667), (17.1667, 18.9, 22.3333), (22.3333, 24.0667, 29.2)] |
+| #1 reveal lands on the music drop (loudness step in OUTPUT) | ✓ | +5.3 dB at 24.0667s |
+| BEFORE photos shown at true brightness (no stuck flash) | ✓ | card luma [82.6, 89.3, 88.5, 90.2, 85.7] (placeholder grey ~70-100) |
+
+Placeholder images (no people) + test track.
+
+Files: `exports/testI_ranking.mp4`, `exports/testI_ranking.contact.png`

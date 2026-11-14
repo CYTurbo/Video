@@ -3,6 +3,7 @@ import {CalculateMetadataFunction, Composition} from 'remotion';
 import {TitleOverlay, TitleOverlayProps} from './TitleOverlay';
 import {KineticTypography, KineticProps} from './KineticTypography';
 import {LogoReveal, LogoRevealProps} from './LogoReveal';
+import {RankingCountdown, RankingProps} from './RankingCountdown';
 
 // Every composition takes width/height/fps/durationSec from input props so the Python
 // pipeline can drive any format (9:16, 16:9, 1:1) without editing code.
@@ -59,6 +60,19 @@ export const RemotionRoot: React.FC = () => {
             beats: [],
             camera: 'dramatic',
           } satisfies KineticProps
+        }
+      />
+      <Composition
+        id="RankingCountdown"
+        component={RankingCountdown}
+        width={1080}
+        height={1920}
+        fps={30}
+        durationInFrames={300}
+        calculateMetadata={sized}
+        defaultProps={
+          {width: 1080, height: 1920, fps: 30, durationSec: 10, title: 'TOP 5', subtitle: '', items: [], beats: [],
+            accent: '#ff3d7f', introEnd: 2} satisfies RankingProps
         }
       />
       <Composition
